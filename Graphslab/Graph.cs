@@ -20,9 +20,10 @@ namespace Graphslab
 
         public GraphNode GetNodeByID(string id)
         {
+            id = id.ToLower();
             foreach (var node in nodes)
             {
-                if (node.ID == id)
+                if (node.ID.ToLower() == id)
                 {
                     return node;
                 }
@@ -50,9 +51,13 @@ namespace Graphslab
             return edgeCount;
         }
 
-        // BFS method revised to closely match the provided pseudocode.
+        
         public void BreadthFirstSearch(string startId)
         {
+            /* This ensures the startId is found even if the method is called and the name isnt exactly as stored 
+             * e.g Node is Anwar - method calls startId as "anwar" or even "aNwAr"
+             */
+            startId = startId.ToLower(); 
             GraphNode startNode = GetNodeByID(startId);
             if (startNode == null)
             {
@@ -60,73 +65,101 @@ namespace Graphslab
                 return;
             }
 
-            List<GraphNode> visited = new List<GraphNode>();  // List to store visited nodes.
-            Queue<GraphNode> toVisit = new Queue<GraphNode>();  // Queue for nodes to visit.
+            //store proccessed nodes once they have been Dequeued and their ID added to the list
+            List<GraphNode> proccessedList = new List<GraphNode>();  
 
-            toVisit.Enqueue(startNode);  // Enqueue the start node.
+            //Store nodes awaiting processing, once proccessed they are dequeued and added to the proccessed list
+            Queue<GraphNode> proccessingQueue = new Queue<GraphNode>();  
 
-            while (toVisit.Count > 0)  // While there are nodes left to visit,
+            proccessingQueue.Enqueue(startNode);  // Enqueue the start node.
+
+            while (proccessingQueue.Count > 0)  // While there are nodes left to visit,
             {
-                GraphNode current = toVisit.Dequeue();  // Dequeue the next node.
+                GraphNode current = proccessingQueue.Dequeue();  // Dequeue the next node.
 
-                if (!visited.Contains(current))
+                if (!proccessedList.Contains(current))
                 {
-                    visited.Add(current);  // Add the current node to visited.
-                    Console.WriteLine("Visited Node: " + current.ID);  // Output the ID of the visited node.
+                    proccessedList.Add(current);  // Add the current node to visited.
+                    
 
                     foreach (string adjId in current.GetAdjList())  // For each adjacent node ID,
                     {
                         GraphNode adjNode = GetNodeByID(adjId);
                         // Only enqueue if not visited and not already in the queue.
-                        if (!visited.Contains(adjNode) && !toVisit.Contains(adjNode))
+                        if (!proccessedList.Contains(adjNode))
                         {
-                            toVisit.Enqueue(adjNode);
+                            proccessingQueue.Enqueue(adjNode);
                         }
                     }
                 }
             }
+            
+
+            for (int i = 0; i < proccessedList.Count; i++)
+            {
+                Console.WriteLine(proccessedList[i].ID);
+            }
         }
 
+
+        //Bool as double traversal is either true or false, yes or no, this specifies this as a result of the method.
         public bool doubleTraversePossible(string startId, string endId)
         {
 
             GraphNode startNode = GetNodeByID(startId);
             GraphNode endNode = GetNodeByID(endId);
+            
             if (startNode == null && endId == null)
             {
                 Console.WriteLine("Start or end node not found.");
                 return false;
             }
 
-            List<GraphNode> visited = new List<GraphNode>();  // List to store visited nodes.
-            Queue<GraphNode> toVisit = new Queue<GraphNode>();  // Queue for nodes to visit.
+            List<GraphNode> proccessedList = new List<GraphNode>();  // List to store visited nodes.
+            Queue<GraphNode> nodeProccessingQueue = new Queue<GraphNode>();  // Queue for nodes to visit.
 
-            toVisit.Enqueue(startNode);  // Enqueue the start node.
+            nodeProccessingQueue.Enqueue(startNode);  // Enqueue the start node.
 
-            while (toVisit.Count > 0)  // While there are nodes left to visit,
+            while (nodeProccessingQueue.Count > 0)  // While there are nodes left to visit,
             {
-                GraphNode current = toVisit.Dequeue();  // Dequeue the next node.
+                GraphNode current = nodeProccessingQueue.Dequeue();  // Dequeue the next node.
 
                 if (current.ID == endId) //if the end node has been reached through the process of the while loop
                 {
+                    Console.WriteLine("double Traversal possible between " + startId + " and " + endId);
+                    Console.WriteLine(endId + " is a friend of a friend of " + startId);
                     return true;
+                    
                 }
-                if (!visited.Contains(current))
+                if (!proccessedList.Contains(current))
                 {
-                    visited.Add(current);  // Add the current node to visited.
-                    Console.WriteLine("Visited Node: " + current.ID);  // Output the ID of the visited node.
+                    proccessedList.Add(current);  // Add the current node to visited.
+                      
 
-                    foreach (string adjId in current.GetAdjList())  // For each adjacent node ID,
+
+
+                    // Loop through each adjacent node ID of the current node that has just been added to the proccessedList.
+                    foreach (string adjId in current.GetAdjList())  
                     {
+
+                       //Use the GraphNodeObject and assign it to the id of the ajacent node attached to the current node just added to the processedList
                         GraphNode adjNode = GetNodeByID(adjId);
-                        // Only enqueue if not visited and not already in the queue.
-                        if (!visited.Contains(adjNode) && !toVisit.Contains(adjNode))
+
+
+                        // if the adjNode is NOT in the vistedList then it still needs to be processed, so it is enqueued
+                        // if the node ajecent to the current and recently processed node IS IN the processedList then this is skipped and the final return is called
+                        if (!proccessedList.Contains(adjNode))
                         {
-                            toVisit.Enqueue(adjNode);
+                            nodeProccessingQueue.Enqueue(adjNode);
                         }
+
                     }
                 }
             }
+
+            //no connection between separate nodes despite both start and end IDs being valid string entries
+            Console.WriteLine("double Traversal not possible between " + startId + " and " + endId);
+            Console.WriteLine(startId + " is not friend of " + endId);
             return false;
         }
     }
