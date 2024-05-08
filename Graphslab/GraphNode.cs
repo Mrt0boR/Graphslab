@@ -1,54 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Graphslab
 {
     public class GraphNode
     {
-        private int id;
+        private string id;  // Identifier for the graph node.
+        private LinkedList<string> adjList;  // Adjacency list to hold IDs of connected nodes.
+        public bool Visited { get; set; }  // Property to check if the node has been visited.
 
-        private LinkedList<int> adjList; //list of IDs of the nodes that are adjacent to the current node
-
-
-
-        //constructor of GraphNode which outines the properties of a graphnode object
-
-        public GraphNode(int id)
+        // Constructor initializes the graph node with a unique identifier.
+        public GraphNode(string id)
         {
             this.id = id;
-
-            //lists are used to represent the edges which are attached to the node.
-            //as long as the id of the node is included in the list it means there
-            //is at least one edge between these two nodes
-            adjList = new LinkedList<int>();
+            adjList = new LinkedList<string>();  // Initialize the adjacency list.
+            Visited = false;  // Initially, the node is not visited.
         }
 
-        //getters and setters for an ID
-        public int ID
+        public string ID
         {
-            set { id = value; }
-            get {  return id; }
+            get { return id; }  // Getter for the node's identifier.
         }
 
-        //this adds edges to allow the connections between the node
-        // this would be applied to a speficic node and use to tie it from node 1 to node 2.
+        // Adds a directed edge to another node.
         public void AddEdge(GraphNode to)
         {
-            adjList.AddLast(to.ID);
+            adjList.AddLast(to.ID);  // Append the identifier of the destination node to the adjacency list.
         }
 
-        //return the adj list of the node
-
-        public LinkedList<int> GetAdjList()
-        { 
-            //return the adjacent list of the node (adjacent meaning close to / near something else)
-            return adjList; 
-        
+        // Retrieves the adjacency list of the node.
+        public LinkedList<string> GetAdjList()
+        {
+            return adjList;  // Return the list of adjacent node identifiers.
         }
-
     }
 }

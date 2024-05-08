@@ -1,33 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Graphslab
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
+            Graph theSocialNetwork = new Graph();
+            theSocialNetwork.AddNode("Dave");
+            theSocialNetwork.AddNode("Anwar");
+            theSocialNetwork.AddNode("Hani");
+            theSocialNetwork.AddNode("Rob");
+            theSocialNetwork.AddNode("Peggy");
+            theSocialNetwork.AddNode("Rabia");
 
-            Graph graph = new Graph();
+            theSocialNetwork.AddEdge("Dave", "Anwar");
+            theSocialNetwork.AddEdge("Anwar", "Hani");
+            theSocialNetwork.AddEdge("Hani", "Rob");
+            theSocialNetwork.AddEdge("Hani", "Peggy");
+            theSocialNetwork.AddEdge("Peggy", "Rabia");
+            theSocialNetwork.AddEdge("Rob", "Rabia");
 
-            //node addition
-            graph.AddNode(1);
-            graph.AddNode(2);
-            graph.AddNode(3);
-            //connect node 1 to node 2
-            graph.AddEdge(1, 2);
-
-            graph.AddEdge(2, 3);
-            graph.AddEdge(3, 2);
-
-            graph.GetNodeByID(1);
-
-            Console.ReadKey();
-            
-
+            Console.WriteLine("Starting BFS from Dave:");
+            theSocialNetwork.BreadthFirstSearch("Dave");
         }
     }
 }
