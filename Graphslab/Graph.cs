@@ -58,6 +58,8 @@ namespace Graphslab
              * e.g Node is Anwar - method calls startId as "anwar" or even "aNwAr"
              */
             startId = startId.ToLower(); 
+
+            //find the start node id and assign to a graphnode object
             GraphNode startNode = GetNodeByID(startId);
             if (startNode == null)
             {
@@ -65,27 +67,30 @@ namespace Graphslab
                 return;
             }
 
-            //store proccessed nodes once they have been Dequeued and their ID added to the list
+            //List to store proccessed nodes once they have been Dequeued and their ID added to the list
             List<GraphNode> proccessedList = new List<GraphNode>();  
 
-            //Store nodes awaiting processing, once proccessed they are dequeued and added to the proccessed list
+            //Queue tp store nodes awaiting processing, once proccessed they are dequeued and added to the proccessed list
             Queue<GraphNode> proccessingQueue = new Queue<GraphNode>();  
 
-            proccessingQueue.Enqueue(startNode);  // Enqueue the start node.
+            proccessingQueue.Enqueue(startNode);  // Enqueue the start node immedietly into the proccessing queue to it isnt skipped.
 
-            while (proccessingQueue.Count > 0)  // While there are nodes left to visit,
+            while (proccessingQueue.Count > 0)  // While there are nodes left to proccess in the queue,
             {
-                GraphNode current = proccessingQueue.Dequeue();  // Dequeue the next node.
+                GraphNode current = proccessingQueue.Dequeue();  // Dequeue the next node and asign it to a graphnode obj called current
 
                 if (!proccessedList.Contains(current))
                 {
-                    proccessedList.Add(current);  // Add the current node to visited.
+                    proccessedList.Add(current);  // if the current and recently dequeued node is not already in the proccessed list, add it.
                     
 
-                    foreach (string adjId in current.GetAdjList())  // For each adjacent node ID,
+                    foreach (string adjId in current.GetAdjList())  // find the Ids of all the nodes adjacent to current once it has been addded successfully.
                     {
+                        //once an ajdcent node found from the list of adjacent nodes, find its Id.
                         GraphNode adjNode = GetNodeByID(adjId);
-                        // Only enqueue if not visited and not already in the queue.
+
+                        // if the adjNode with adjId is not contained within the processed list then add it to the proccessing queue, then repeat the loop until the queue count is 0
+                        // this check ensures the while loop does not go on forever, as eventually an adjacent node will be found which is already in the proccessed list, breaking the queue.
                         if (!proccessedList.Contains(adjNode))
                         {
                             proccessingQueue.Enqueue(adjNode);
@@ -94,14 +99,15 @@ namespace Graphslab
                 }
             }
             
-
+            //iterate through the list, printing all the nodes that have been added.
+            // < rather than <= because there will be a 0 index so a processed list of 10 members should have 9 iterations as 0 is an index.
             for (int i = 0; i < proccessedList.Count; i++)
             {
                 Console.WriteLine(proccessedList[i].ID);
             }
         }
 
-
+        //This is essentially an edited bredth first search method.
         //Bool as double traversal is either true or false, yes or no, this specifies this as a result of the method.
         public bool doubleTraversePossible(string startId, string endId)
         {
